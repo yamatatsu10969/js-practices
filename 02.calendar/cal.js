@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import * as fns from 'date-fns'
+const fns = require('date-fns')
 
 // [JavaScriptでRubyのeach_sliceと同じことをしたい | suke blog](https://suke.io/entry/20190219/)
 const eachSlice = (arr, n = 2) => {
@@ -39,7 +39,14 @@ function displayBody (displayDate) {
   eachSlice(displayDates, 7).forEach(slice => console.log(slice.join(' ')))
 }
 
-const today = new Date(2022, 5)
+function main () {
+  const now = new Date()
+  const argv = require('minimist')(process.argv.slice(2))
+  const month = isNaN(argv.m) ? fns.getMonth(now) : argv.m - 1
+  const year = isNaN(argv.y) ? fns.getYear(now) : argv.y
+  const date = new Date(year, month)
+  displayHeader(date)
+  displayBody(date)
+}
 
-displayHeader(today)
-displayBody(today)
+main()
