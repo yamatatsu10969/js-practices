@@ -1,8 +1,8 @@
 {
-    "name": "02.calendar",
+    "name": "04.class",
     "version": "1.0.0",
     "description": "",
-    "main": "cal.js",
+    "main": "lib/memo.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "lint": "eslint src"
@@ -13,5 +13,7 @@
         "eslint": "^8.14.0",
         "standard": "^17.0.0"
     },
-    "dependencies": {}
+    "dependencies": {
+        "sqlite3": "^5.0.6"
+    }
 }
