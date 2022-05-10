@@ -11,7 +11,7 @@ class Memo {
     const jsons = await memoDBClient.all()
     if (jsons.length === 0) return []
     return jsons.map(json => new Memo(json.id, json.body))
-}
+  }
 
   static save (body) {
     memoDBClient.save(body)
@@ -58,6 +58,10 @@ async function deleteMemo () {
       })
     )
 
+  if (choices.length === 0) {
+    throw new Error('No memo')
+  }
+
   const answer = await prompt({
     type: 'select',
     name: 'memoId',
@@ -83,6 +87,10 @@ async function readMemo () {
       })
     )
 
+  if (choices.length === 0) {
+    throw new Error('No memo')
+  }
+
   await prompt({
     type: 'select',
     message: 'Choose a note you want to see:',
@@ -95,14 +103,18 @@ async function main () {
 
   const argv = require('minimist')(process.argv.slice(2))
 
-  if (argv.l) {
-    await showMemoList()
-  } else if (argv.d) {
-    await deleteMemo()
-  } else if (argv.r) {
-    await readMemo()
-  } else {
-    await saveMemo()
+  try {
+    if (argv.l) {
+      await showMemoList()
+    } else if (argv.d) {
+      await deleteMemo()
+    } else if (argv.r) {
+      await readMemo()
+    } else {
+      await saveMemo()
+    }
+  } catch (e) {
+    console.log(e.message)
   }
 }
 
