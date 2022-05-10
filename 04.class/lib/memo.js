@@ -115,6 +115,8 @@ async function main () {
     }
   } catch (e) {
     console.log(e.message)
+  } finally {
+    memoDBClient.dispose()
   }
 }
 

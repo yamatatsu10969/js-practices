@@ -19,7 +19,6 @@ class MemoDatabaseClient {
   }
 
   async all () {
-    console.log('all')
     return new Promise(resolve =>
       this.db.all('SELECT * FROM memos', (_, rows) => {
         return resolve(rows)
@@ -28,7 +27,6 @@ class MemoDatabaseClient {
   }
 
   async save (body) {
-    console.log('save')
     return new Promise(resolve =>
       this.db.run(
         'INSERT INTO memos(body) values(?)',
@@ -39,16 +37,7 @@ class MemoDatabaseClient {
   }
 
   async delete (id) {
-    console.log('delete')
     this.db.run('DELETE FROM memos WHERE id = ?', id)
-  }
-
-  // TODO: 後で消す
-  async dropTableForTesting () {
-    return new Promise(resolve => {
-      this.db.run('DROP TABLE IF EXISTS memos',
-        (_result, _error) => resolve())
-    })
   }
 
   dispose () {
