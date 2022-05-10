@@ -1,13 +1,26 @@
 #!/usr/bin/env node
 
+const memoDBClient = require('./memo-database-client.js').memoDatabaseClient
 class Memo {
   constructor (id, body) {
     this.id = id
     this.body = body
   }
+
+  static async all () {
+    const jsons = await memoDBClient.all()
+    if (jsons.length === 0) return []
+    return jsons.map(json => new Memo(json.id, json.body))
 }
 
-const memoDBClient = require('./memo-database-client.js').memoDatabaseClient
+  static save (body) {
+    memoDBClient.save(body)
+  }
+
+  static delete (id) {
+    memoDBClient.delete(id)
+  }
+}
 
 async function saveMemo () {
   process.stdin.setEncoding('utf8')
@@ -20,16 +33,12 @@ async function saveMemo () {
     lines.push(line)
   })
   reader.on('close', () => {
-    memoDBClient.save(lines.join('\n'))
+    Memo.save(lines.join('\n'))
   })
 }
 
 async function showMemoList () {
-  memoDBClient.all()
-    .then(jsons => {
-      if (jsons.length === 0) return []
-      return jsons.map(json => new Memo(json.id, json.body))
-    })
+  Memo.all()
     .then(memos => {
       if (memos.length === 0) return []
       memos.forEach(memo => console.log(memo.body.split('\n')[0]))
@@ -38,10 +47,7 @@ async function showMemoList () {
 
 async function deleteMemo () {
   const { prompt } = require('enquirer')
-  const choices = await memoDBClient.all()
-    .then(jsons => {
-      return jsons.map(json => new Memo(json.id, json.body))
-    })
+  const choices = await Memo.all()
     .then(memos =>
       memos.map(function (memo) {
         return {
@@ -54,7 +60,7 @@ async function deleteMemo () {
 
   const answer = await prompt({
     type: 'select',
-    name: 'memo',
+    name: 'memoId',
     message: 'Choose a note you want to delete:',
     choices,
     result (names) {
@@ -62,15 +68,12 @@ async function deleteMemo () {
       return value
     }
   })
-  await memoDBClient.delete(answer.memo)
+  Memo.delete(answer.memoId)
 }
 
 async function readMemo () {
   const { prompt } = require('enquirer')
-  const choices = await memoDBClient.all()
-    .then(jsons => {
-      return jsons.map(json => new Memo(json.id, json.body))
-    })
+  const choices = await Memo.all()
     .then(memos =>
       memos.map(function (memo) {
         return {
