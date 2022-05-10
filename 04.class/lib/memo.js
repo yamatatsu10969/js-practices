@@ -36,12 +36,34 @@ async function showMemoList () {
 
 async function deleteMemo () {
   // TODO(yamatatsu): delete
-
+  console.log('deleteMemo')
 }
 
 async function readMemo () {
-  // TODO(yamatatsu): read
+  const { prompt } = require('enquirer')
+  const choices = await memoDBClient.all()
+    .then(jsons => {
+      return jsons.map(json => new Memo(json.id, json.body))
+    })
+    .then(memos =>
+      memos.map(function (memo) {
+        return {
+          name: '\n' + memo.body,
+          message: memo.body.split('\n')[0],
+          value: memo.body
+        }
+      })
+    )
+  console.log(choices.length)
 
+  await prompt({
+    type: 'select',
+    message: 'Choose a note you want to see:',
+    choices,
+    result (names) {
+      return this.map(names)
+    }
+  })
 }
 
 async function main () {
