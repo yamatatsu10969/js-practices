@@ -5,7 +5,7 @@ class MemoDatabaseClient {
     const sqlite3 = require('sqlite3')
     const fs = require('fs')
     fs.existsSync('memo.db') || fs.writeFileSync('memo.db', '')
-    this.db = new sqlite3.Database('../memos.db')
+    this.db = new sqlite3.Database('../memo.db')
   }
 
   async initialize () {
