@@ -27,16 +27,42 @@ async function saveMemo () {
 async function showMemoList () {
   memoDBClient.all()
     .then(jsons => {
+      if (jsons.length === 0) return []
       return jsons.map(json => new Memo(json.id, json.body))
     })
-    .then(memos =>
+    .then(memos => {
+      if (memos.length === 0) return []
       memos.forEach(memo => console.log(memo.body.split('\n')[0]))
-    )
+    })
 }
 
 async function deleteMemo () {
-  // TODO(yamatatsu): delete
-  console.log('deleteMemo')
+  const { prompt } = require('enquirer')
+  const choices = await memoDBClient.all()
+    .then(jsons => {
+      return jsons.map(json => new Memo(json.id, json.body))
+    })
+    .then(memos =>
+      memos.map(function (memo) {
+        return {
+          name: memo.body.split('\n')[0],
+          message: memo.body.split('\n')[0],
+          value: memo.id
+        }
+      })
+    )
+
+  const answer = await prompt({
+    type: 'select',
+    name: 'memo',
+    message: 'Choose a note you want to delete:',
+    choices,
+    result (names) {
+      const value = this.map(names)[names]
+      return value
+    }
+  })
+  await memoDBClient.delete(answer.memo)
 }
 
 async function readMemo () {
@@ -49,20 +75,15 @@ async function readMemo () {
       memos.map(function (memo) {
         return {
           name: '\n' + memo.body,
-          message: memo.body.split('\n')[0],
-          value: memo.body
+          message: memo.body.split('\n')[0]
         }
       })
     )
-  console.log(choices.length)
 
   await prompt({
     type: 'select',
     message: 'Choose a note you want to see:',
-    choices,
-    result (names) {
-      return this.map(names)
-    }
+    choices
   })
 }
 
