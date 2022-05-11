@@ -35,7 +35,13 @@ class MemoDatabaseClient {
   }
 
   async delete (id) {
-    this.db.run('DELETE FROM memos WHERE id = ?', id)
+    return new Promise(resolve =>
+      this.db.run(
+        'DELETE FROM memos WHERE id = ?',
+        id,
+        (_result, _err) => resolve()
+      )
+    )
   }
 }
 

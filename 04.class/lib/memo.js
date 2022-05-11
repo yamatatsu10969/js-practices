@@ -13,12 +13,12 @@ class Memo {
     return jsons.map(json => new Memo(json.id, json.body))
   }
 
-  static save (body) {
-    memoDBClient.save(body)
+  static async save (body) {
+    await memoDBClient.save(body)
   }
 
-  static delete (id) {
-    memoDBClient.delete(id)
+  static async delete (id) {
+    await memoDBClient.delete(id)
   }
 }
 
@@ -72,7 +72,7 @@ async function deleteMemo () {
       return value
     }
   })
-  Memo.delete(answer.memoId)
+  await Memo.delete(answer.memoId)
 }
 
 async function readMemo () {
