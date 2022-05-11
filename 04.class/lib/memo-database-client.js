@@ -37,10 +37,6 @@ class MemoDatabaseClient {
   async delete (id) {
     this.db.run('DELETE FROM memos WHERE id = ?', id)
   }
-
-  dispose () {
-    this.db.close()
-  }
 }
 
 const memoDatabaseClient = new MemoDatabaseClient()
