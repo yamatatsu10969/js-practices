@@ -6,11 +6,9 @@ const fns = require('date-fns')
 const eachSlice = (arr, n = 2) => {
   const dup = [...arr]
   const result = []
-  let length = dup.length
 
-  while (length > 0) {
+  while (dup.length > 0) {
     result.push(dup.splice(0, n))
-    length = dup.length
   }
 
   return result
