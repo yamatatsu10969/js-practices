@@ -77,15 +77,13 @@ async function deleteMemo () {
 
 async function readMemo () {
   const { prompt } = require('enquirer')
-  const choices = await Memo.all()
-    .then(memos =>
-      memos.map(function (memo) {
-        return {
-          name: '\n' + memo.body,
-          message: memo.body.split('\n')[0]
-        }
-      })
-    )
+  const memos = await Memo.all()
+  const choices = memos.map(function (memo) {
+    return {
+      name: '\n' + memo.body,
+      message: memo.body.split('\n')[0]
+    }
+  })
 
   if (choices.length === 0) {
     throw new Error('No memo')
