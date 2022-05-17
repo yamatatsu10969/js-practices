@@ -99,11 +99,9 @@ async function readMemo () {
 }
 
 async function main () {
-  await memoDBClient.initialize()
-
-  const argv = require('minimist')(process.argv.slice(2))
-
   try {
+    await memoDBClient.initialize()
+    const argv = require('minimist')(process.argv.slice(2))
     if (argv.l) {
       await showMemoList()
     } else if (argv.d) {
