@@ -1,28 +1,13 @@
 #!/usr/bin/env node
 
-const memoDBClient = require('./memo-database-client.js').memoDatabaseClient
-class Memo {
+module.exports = class Memo {
   constructor (id, body) {
     this.id = id
     this.body = body
   }
-
-  static async all () {
-    const jsons = await memoDBClient.all()
-    if (jsons.length === 0) return []
-    return jsons.map(json => new Memo(json.id, json.body))
-  }
-
-  static async save (body) {
-    await memoDBClient.save(body)
-  }
-
-  static async delete (id) {
-    await memoDBClient.delete(id)
-  }
 }
 
-async function saveMemo () {
+async function saveMemo (memoDBClient) {
   process.stdin.setEncoding('utf8')
   const lines = []
   const reader = require('readline').createInterface({
@@ -33,30 +18,28 @@ async function saveMemo () {
     lines.push(line)
   })
   reader.on('close', () => {
-    Memo.save(lines.join('\n'))
+    memoDBClient.save(lines.join('\n'))
   })
 }
 
-async function showMemoList () {
-  Memo.all()
+async function showMemoList (memoDBClient) {
+  memoDBClient.all()
     .then(memos => {
       if (memos.length === 0) return []
       memos.forEach(memo => console.log(memo.body.split('\n')[0]))
     })
 }
 
-async function deleteMemo () {
+async function deleteMemo (memoDBClient) {
   const { prompt } = require('enquirer')
-  const choices = await Memo.all()
-    .then(memos =>
-      memos.map(function (memo) {
-        return {
-          name: memo.body.split('\n')[0],
-          message: memo.body.split('\n')[0],
-          value: memo.id
-        }
-      })
-    )
+  const memos = await memoDBClient.all()
+  const choices = memos.map(function (memo) {
+    return {
+      name: memo.body.split('\n')[0],
+      message: memo.body.split('\n')[0],
+      value: memo.id
+    }
+  })
 
   if (choices.length === 0) {
     throw new Error('No memo')
@@ -72,12 +55,12 @@ async function deleteMemo () {
       return value
     }
   })
-  await Memo.delete(answer.memoId)
+  await memoDBClient.delete(answer.memoId)
 }
 
-async function readMemo () {
+async function readMemo (memoDBClient) {
   const { prompt } = require('enquirer')
-  const memos = await Memo.all()
+  const memos = await memoDBClient.all()
   const choices = memos.map(function (memo) {
     return {
       name: '\n' + memo.body,
@@ -96,18 +79,21 @@ async function readMemo () {
   })
 }
 
+const MemoDBClient = require('./memo-database-client.js')
+
 async function main () {
   try {
+    const memoDBClient = new MemoDBClient()
     await memoDBClient.initialize()
     const argv = require('minimist')(process.argv.slice(2))
     if (argv.l) {
-      await showMemoList()
+      await showMemoList(memoDBClient)
     } else if (argv.d) {
-      await deleteMemo()
+      await deleteMemo(memoDBClient)
     } else if (argv.r) {
-      await readMemo()
+      await readMemo(memoDBClient)
     } else {
-      await saveMemo()
+      await saveMemo(memoDBClient)
     }
   } catch (e) {
     console.log(e.message)

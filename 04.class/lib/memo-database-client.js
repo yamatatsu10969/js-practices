@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
-class MemoDatabaseClient {
+const Memo = require('./memo.js')
+
+module.exports = class MemoDatabaseClient {
   constructor () {
     const sqlite3 = require('sqlite3')
     this.db = new sqlite3.Database('./memo.db')
@@ -17,11 +19,15 @@ class MemoDatabaseClient {
   }
 
   async all () {
-    return new Promise(resolve =>
+    const promise = new Promise(resolve =>
       this.db.all('SELECT * FROM memos', (_, rows) => {
         return resolve(rows)
       })
     )
+    const jsons = await promise
+    return jsons.map(json => {
+      return new Memo(json.id, json.body)
+    })
   }
 
   async save (body) {
@@ -44,7 +50,3 @@ class MemoDatabaseClient {
     )
   }
 }
-
-const memoDatabaseClient = new MemoDatabaseClient()
-
-module.exports.memoDatabaseClient = memoDatabaseClient
