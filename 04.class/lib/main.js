@@ -1,8 +1,12 @@
+const readline = require('readline')
+const { prompt } = require('enquirer')
+const MemoDBClient = require('./memo-database-client.js')
+const minimist = require('minimist')
 
 async function saveMemo (memoDBClient) {
   process.stdin.setEncoding('utf8')
   const lines = []
-  const reader = require('readline').createInterface({
+  const reader = readline.createInterface({
     input: process.stdin,
     output: process.stdout
   })
@@ -21,7 +25,6 @@ async function showMemoList (memoDBClient) {
 }
 
 async function deleteMemo (memoDBClient) {
-  const { prompt } = require('enquirer')
   const memos = await memoDBClient.all()
   const choices = memos.map(function (memo) {
     return {
@@ -49,7 +52,6 @@ async function deleteMemo (memoDBClient) {
 }
 
 async function readMemo (memoDBClient) {
-  const { prompt } = require('enquirer')
   const memos = await memoDBClient.all()
   const choices = memos.map(function (memo) {
     return {
@@ -71,10 +73,9 @@ async function readMemo (memoDBClient) {
 
 async function main () {
   try {
-    const MemoDBClient = require('./memo-database-client.js')
     const memoDBClient = new MemoDBClient()
     await memoDBClient.initialize()
-    const argv = require('minimist')(process.argv.slice(2))
+    const argv = minimist(process.argv.slice(2))
     if (argv.l) {
       await showMemoList(memoDBClient)
     } else if (argv.d) {

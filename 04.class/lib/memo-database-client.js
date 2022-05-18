@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
 const Memo = require('./memo.js')
+const sqlite3 = require('sqlite3')
 
 module.exports = class MemoDatabaseClient {
   constructor () {
-    const sqlite3 = require('sqlite3')
     this.db = new sqlite3.Database('./memo.db')
   }
 
