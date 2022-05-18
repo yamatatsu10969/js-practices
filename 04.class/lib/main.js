@@ -15,11 +15,9 @@ async function saveMemo (memoDBClient) {
 }
 
 async function showMemoList (memoDBClient) {
-  memoDBClient.all()
-    .then(memos => {
-      if (memos.length === 0) return []
-      memos.forEach(memo => console.log(memo.body.split('\n')[0]))
-    })
+  const memos = await memoDBClient.all()
+  if (memos.length === 0) return []
+  memos.forEach(memo => console.log(memo.body.split('\n')[0]))
 }
 
 async function deleteMemo (memoDBClient) {
