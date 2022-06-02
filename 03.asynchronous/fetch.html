@@ -8,13 +8,13 @@
   </head>
   <body>
     <script>
-      const fjordbootcampUrl = "https://bootcamp.fjord.jp/";
-      fetch(fjordbootcampUrl)
-        .then((response) => response.text())
-        .then((html) => console.log(html))
-        .catch((error) => {
-          console.log(error);
-        });
+      async function displayBootCampHTML() {
+        const fjordbootcampUrl = "https://bootcamp.fjord.jp/";
+        const response = await fetch(fjordbootcampUrl);
+        const html = await response.text();
+        console.log(html);
+      }
+      displayBootCampHTML();
     </script>
   </body>
 </html>
